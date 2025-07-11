@@ -63,6 +63,6 @@ project/
 ├── requirements.txt         # Python libraries
 ├── README.md
 
-📎 License
+## 📎 License
 This project is open-source and free to use for learning and educational purposes.
 Attribution is appreciated — feel free to fork, improve, and share 🙌
