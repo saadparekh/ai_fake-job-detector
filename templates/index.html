@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fake Job Detection AI Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #d1c4e9, #b2dfdb);
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+      padding: 40px;
+    }
+    h1 {
+      text-align: center;
+      color: #4a148c;
+      margin-bottom: 30px;
+    }
+    .dashboard-section {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .chart-box {
+      flex: 1;
+      min-width: 300px;
+      background: #f3e5f5;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+    form {
+      margin-top: 30px;
+      display: grid;
+      gap: 15px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      background-color: #f9f9f9;
+      transition: all 0.3s ease;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #ab47bc;
+      background-color: #fff;
+    }
+    button {
+      padding: 14px;
+      background: linear-gradient(to right, #8e24aa, #6a1b9a);
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: linear-gradient(to right, #6a1b9a, #4a148c);
+    }
+    .result {
+      margin-top: 25px;
+      padding: 18px;
+      background: #ede7f6;
+      border-left: 6px solid #7b1fa2;
+      font-size: 18px;
+      border-radius: 8px;
+      color: #4a148c;
+    }
+    canvas {
+      margin-top: 20px;
+    }
+    .toggle-form {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .toggle-form button {
+      padding: 10px 20px;
+      font-size: 15px;
+      background-color: #7e57c2;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Fake Job Detection AI Dashboard</h1>
+
+    <div class="dashboard-section">
+      <div class="chart-box">
+        <h3>Job Data Breakdown</h3>
+        <canvas id="classChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Prediction Types</h3>
+        <canvas id="resultChart"></canvas>
+      </div>
+    </div>
+
+    <div class="toggle-form">
+      <button onclick="document.getElementById('predictForm').scrollIntoView({behavior: 'smooth'})">⬇️ Fill Form for Prediction</button>
+    </div>
+
+    <form id="predictForm" method="POST" action="/predict">
+      <h3>📝 Enter Job Details</h3>
+      <input type="text" name="title" placeholder="Job Title" required />
+      <textarea name="company_profile" placeholder="Company Profile" required></textarea>
+      <textarea name="description" placeholder="Job Description" required></textarea>
+      <textarea name="requirements" placeholder="Job Requirements"></textarea>
+      <textarea name="benefits" placeholder="Job Benefits"></textarea>
+      <select name="employment_type">
+        <option value="">Employment Type</option>
+        <option>Full-time</option>
+        <option>Part-time</option>
+        <option>Contract</option>
+        <option>Temporary</option>
+      </select>
+      <select name="required_experience">
+        <option value="">Experience Required</option>
+        <option>Internship</option>
+        <option>Entry level</option>
+        <option>Associate</option>
+        <option>Mid-Senior level</option>
+      </select>
+      <select name="required_education">
+        <option value="">Education Required</option>
+        <option>High School or equivalent</option>
+        <option>Bachelor's Degree</option>
+        <option>Master's Degree</option>
+        <option>PhD</option>
+      </select>
+      <button type="submit">🚀 Predict Now</button>
+    </form>
+
+    {% if prediction %}
+    <div class="result">
+      <strong>Prediction:</strong> {{ prediction }}<br />
+      <strong>Confidence:</strong> {{ confidence }}%
+    </div>
+    {% endif %}
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const classCtx = document.getElementById('classChart').getContext('2d');
+    new Chart(classCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Real Jobs', 'Fake Jobs'],
+        datasets: [{
+          label: 'Dataset Class Distribution',
+          data: [6100, 700],
+          backgroundColor: ['#66bb6a', '#ef5350']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: 'Dataset Overview'
+          }
+        }
+      }
+    });
+
+    const resultCtx = document.getElementById('resultChart').getContext('2d');
+    new Chart(resultCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Real', 'Fake', 'Suspicious'],
+        datasets: [{
+          label: 'Prediction Breakdown',
+          data: [5, 2, 1],
+          backgroundColor: ['#4caf50', '#f44336', '#ff9800'],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          },
+          title: {
+            display: true,
+            text: 'Recent Prediction Summary'
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
